@@ -19,6 +19,8 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'strategyPattern'], function () {
 	Route::get('/calculateIssTax', 'StrategyPatternTaxCalculatorController@calculateIssTax');
+	Route::post('/calculateIssTax', 'StrategyPatternTaxCalculatorController@calculateIssTax');
+
 	Route::get('/calculateIcmsTax', 'StrategyPatternTaxCalculatorController@calculateIcmsTax');
 	Route::get('/calculateInssTax', 'StrategyPatternTaxCalculatorController@calculateInssTax');
 	Route::get('/calculateFgtsTax', 'StrategyPatternTaxCalculatorController@calculateFgtsTax');

@@ -36,7 +36,7 @@ class Response
 	 *
 	 * @return void
     */
-    public static function success($data, $code, $startTime = false, $message = 'success', $status = 'success'){
+    public static function response($data, $code, $startTime = false, $message = 'success',$status = 'success'){
     	self::$data = $data;
     	self::$code = $code;
     	self::$message = $message;
@@ -48,6 +48,34 @@ class Response
     	}
 
     	return self::getResponse();
+    }
+
+    /**
+	 * seta os parametros da resposta
+	 * @param array $data
+	 * @param array $code
+	 * @param array $startTime
+	 * @param array $message
+	 * @param array $status
+	 *
+	 * @return void
+    */
+    public static function success($data, $code = 200, $startTime = false, $message = 'success',$status = 'success'){
+    	return self::response($data, $code, $startTime, $message, $status);
+    }
+
+    /**
+	 * seta os parametros da resposta
+	 * @param array $data
+	 * @param array $code
+	 * @param array $startTime
+	 * @param array $message
+	 * @param array $status
+	 *
+	 * @return void
+    */
+    public static function error($data, $code = 400, $startTime = false, $message = 'error',$status = 'error'){
+    	return self::response($data, $code, $startTime, $message, $status);
     }
 
     /**

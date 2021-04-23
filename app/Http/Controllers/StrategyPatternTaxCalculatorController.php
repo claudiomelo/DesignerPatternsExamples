@@ -4,21 +4,45 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Responses\Response;
+use Illuminate\Support\Facades\Validator;
+
 use App\Http\Requests\StrategyPatternTaxCalculatorRequest;
+use App\Domains\Budget\Budget;
 use App\Domains\StrategyPatternTaxCalculator\TaxCalculator;
 use App\Domains\StrategyPatternTaxCalculator\Taxes\IcmsTax;
 use App\Domains\StrategyPatternTaxCalculator\Taxes\IssTax;
 use App\Domains\StrategyPatternTaxCalculator\Taxes\InssTax;
 use App\Domains\StrategyPatternTaxCalculator\Taxes\FgtsTax;
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 class StrategyPatternTaxCalculatorController extends Controller
 {
 	/**
 	 * calculate the iss tax
 	*/
-    public function calculateIssTax(StrategyPatternTaxCalculatorRequest $request)
+    public function calculateIssTax(Request $request)
     {
-    	return $this->callTaxCalculation($request->value, new IssTax());
+    	$validator = Validator::make($request->all(), [
+            'value' => 'required|integer',
+            // 'value3' => 'required|integer'
+        ]);
+
+    	if ($validator->fails())
+        {
+			return Response::error(
+	    		$validator->errors()->toArray(),
+	    		400,
+	    		$this->startTime
+	    	);       
+        }
+
+		// echo "<pre>lol";
+		// print_r($validate);
+		// exit;
+
+    	return $this->callTaxCalculation(new Budget($request->value), new IssTax());
     }
 
     /**
@@ -26,7 +50,7 @@ class StrategyPatternTaxCalculatorController extends Controller
 	*/
     public function calculateIcmsTax(StrategyPatternTaxCalculatorRequest $request)
     {
-    	return $this->callTaxCalculation($request->value, new IcmsTax());
+    	return $this->callTaxCalculation(new Budget($request->value), new IcmsTax());
     }
 
     /**
@@ -34,7 +58,7 @@ class StrategyPatternTaxCalculatorController extends Controller
 	*/
     public function calculateInssTax(StrategyPatternTaxCalculatorRequest $request)
     {
-    	return $this->callTaxCalculation($request->value, new InssTax());
+    	return $this->callTaxCalculation(new Budget($request->value), new InssTax());
     }
 
     /**
@@ -42,9 +66,7 @@ class StrategyPatternTaxCalculatorController extends Controller
 	*/
     public function calculateFgtsTax(StrategyPatternTaxCalculatorRequest $request)
     {
-    	print_r( (new TaxCalculator())->calculate($request->value, new FgtsTax()));
-    	// exit;
-    	return $this->callTaxCalculation($request->value, new FgtsTax());
+    	return $this->callTaxCalculation(new Budget($request->value), new FgtsTax());
     }
 
     /**
@@ -53,10 +75,10 @@ class StrategyPatternTaxCalculatorController extends Controller
     public function calculateAllTax(StrategyPatternTaxCalculatorRequest $request)
     {
     	try {
-	    	$totalTax = (new TaxCalculator())->calculate($request->value, new IssTax())['tax'];
-	    	$totalTax += (new TaxCalculator())->calculate($request->value, new IcmsTax())['tax'];
-	    	$totalTax += (new TaxCalculator())->calculate($request->value, new InssTax())['tax'];
-	    	$totalTax += (new TaxCalculator())->calculate($request->value, new FgtsTax())['tax'];
+	    	$totalTax = (new TaxCalculator())->calculate(new Budget($request->value), new IssTax())['tax'];
+	    	$totalTax += (new TaxCalculator())->calculate(new Budget($request->value), new IcmsTax())['tax'];
+	    	$totalTax += (new TaxCalculator())->calculate(new Budget($request->value), new InssTax())['tax'];
+	    	$totalTax += (new TaxCalculator())->calculate(new Budget($request->value), new FgtsTax())['tax'];
 
 	    	return Response::success(
 	    		['tax' => $totalTax],
@@ -73,11 +95,11 @@ class StrategyPatternTaxCalculatorController extends Controller
     /**
 	 * call tax calculator to calculate the tax
 	*/
-    private function callTaxCalculation(float $value, $tax)
+    private function callTaxCalculation(Budget $budget, $tax)
     {
     	try {
 	    	return Response::success(
-	    		(new TaxCalculator())->calculate($value, $tax),
+	    		(new TaxCalculator())->calculate($budget, $tax),
 	    		200,
 	    		$this->startTime
 	    	);

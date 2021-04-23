@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
-class StrategyPatternTaxCalculatorRequest extends FormRequest
+class StrategyPatternTaxCalculatorRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -18,15 +19,14 @@ class StrategyPatternTaxCalculatorRequest extends FormRequest
 
     /**
      * Prepare the data for validation.
-     * Adiciona o parâmetro id aos dados que serão validados
      *
      * @return void
      */
     protected function prepareForValidation()
     {
-        $this->merge([
-            'id' => (int) $this->route('fonte'),
-        ]);
+        // $this->merge([
+        //     'id' => (int) $this->route('param'),
+        // ]);
     }
 
     /**
@@ -37,11 +37,8 @@ class StrategyPatternTaxCalculatorRequest extends FormRequest
     public function rules()
     {
         return [
-            // 'id' => 'required|integer|min:1|exists:fontes,id',
-            // 'nome' => 'sometimes|string|filled',
-            // 'id_captura' => 'sometimes|integer|min:1|exists:App\Models\Captura,id',
-            // 'ativo' => 'sometimes|boolean',
-            // 'param_payload' => 'sometimes|json|filled'
+            'value' => 'required|integer',
+            'value2' => 'required|integer'
         ];
     }
 }

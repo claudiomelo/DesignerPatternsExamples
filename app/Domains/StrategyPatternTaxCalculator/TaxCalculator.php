@@ -2,6 +2,7 @@
 
 namespace App\Domains\StrategyPatternTaxCalculator;
 
+use App\Domains\Budget\Budget;
 use App\Interfaces\TaxCalculatorInterface;
 use App\Interfaces\TaxInterface;
 
@@ -10,9 +11,9 @@ use App\Interfaces\TaxInterface;
  */
 class TaxCalculator implements TaxCalculatorInterface
 {
-	public function calculate(float $value, TaxInterface $tax): array
+	public function calculate(Budget $budget, TaxInterface $tax): array
 	{
-		$taxValue = $tax->calculate($value);
+		$taxValue = $tax->calculate($budget);
 
 		return ['tax' => $taxValue];
 	}
